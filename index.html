@@ -1,0 +1,124 @@
+!DOCTYPE html
+html lang=ru
+head
+meta charset=UTF-8
+meta name=viewport content=width=device-width, initial-scale=1, viewport-fit=cover
+
+titleКалькулятор топливной смесиtitle
+
+link rel=manifest href=manifest.json
+meta name=theme-color content=#111111
+
+style
+
+body{
+    font-family Arial;
+    background#111;
+    color#fff;
+    margin0;
+    padding16px;
+}
+
+.box{
+    max-width480px;
+    margin0 auto;
+    background#1b1b1b;
+    padding20px;
+    border-radius16px;
+}
+
+h1{
+    text-aligncenter;
+}
+
+input,select{
+    width100%;
+    padding14px;
+    margin10px 0;
+    border-radius12px;
+    bordernone;
+    background#2a2a2a;
+    color#fff;
+    font-size16px;
+}
+
+button{
+    width100%;
+    padding14px;
+    bordernone;
+    border-radius12px;
+    background#00c853;
+    color#fff;
+    font-size16px;
+}
+
+.result{
+    margin-top15px;
+    padding15px;
+    background#262626;
+    border-radius12px;
+}
+
+style
+head
+
+body
+
+div class=box
+
+h1Калькулятор смесиh1
+
+select id=mix
+option value=10E10option
+option value=15E15option
+option value=20E20option
+option value=30E30option
+option value=40E40option
+option value=50E50option
+option value=60E60option
+option value=70E70option
+option value=80E80option
+option value=85E85option
+option value=90E90option
+select
+
+input id=tank placeholder=Объём бака (л)
+input id=fuel placeholder=Бензин в баке (л)
+
+button onclick=calc()Рассчитатьbutton
+
+div class=result id=resВведите данныеdiv
+
+div
+
+script
+
+function n(v){
+  return parseFloat((v'').replace(',','.'));
+}
+
+function calc(){
+
+  const e = n(document.getElementById('mix').value);
+  const tank = n(document.getElementById('tank').value);
+  const fuel = n(document.getElementById('fuel').value);
+
+  if(!tank  !fuel) return;
+
+  const alcohol = (efuel)(100-e);
+  const total = fuel + alcohol;
+
+  document.getElementById('res').innerHTML =
+    Спирт  + alcohol.toFixed(2) +  лbr +
+    Итого  + total.toFixed(2) +  лbr +
+    E + e;
+}
+
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('sw.js');
+}
+
+script
+
+body
+html
