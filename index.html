@@ -2,12 +2,22 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1, viewport-fit=cover">
 
 <title>Калькулятор топливной смеси</title>
 
+<link rel="icon" type="image/png" href="favicon.png">
+
 <link rel="manifest" href="manifest.json">
+
 <meta name="theme-color" content="#111111">
+
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="FMC">
+<meta name="mobile-web-app-capable" content="yes">
 
 <style>
 
@@ -286,7 +296,6 @@ function calc(){
             return;
         }
 
-        // Формула:
         // Vспирта = (K * E * Vбензина) / (100 - E)
 
         const alcohol =
@@ -326,7 +335,6 @@ function calc(){
             return;
         }
 
-        // Формула:
         // Vспирта = K * E/100 * Vбака
 
         const alcohol =
@@ -356,7 +364,7 @@ function calc(){
 }
 
 if('serviceWorker' in navigator){
-//    navigator.serviceWorker.register('sw.js');
+// navigator.serviceWorker.register('sw.js');
 }
 
 </script>
