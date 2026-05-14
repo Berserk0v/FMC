@@ -59,24 +59,14 @@ label{
     margin-bottom:6px;
 }
 
-input,
-select{
+input,select{
     width:100%;
-    min-width:100%;
-    max-width:100%;
-
-    display:block;
-
     padding:14px;
-
     border-radius:12px;
     border:none;
-
     background:#2a2a2a;
     color:#fff;
-
     font-size:16px;
-
     box-sizing:border-box;
 }
 
@@ -91,6 +81,12 @@ select{
 .highlight{
     color:#00e676;
     font-weight:bold;
+}
+
+.small{
+    opacity:0.7;
+    font-size:13px;
+    margin-top:6px;
 }
 
 </style>
@@ -144,7 +140,24 @@ onclick="setMode('full')">
 <option value="75">E75</option>
 <option value="80">E80</option>
 <option value="85">E85</option>
-<option value="90">E90</option>
+
+</select>
+
+<div class="small">
+E — нужный процент содержания спирта в смеси
+</div>
+
+<label>Тип спирта</label>
+
+<select id="alcoholType">
+
+<option value="1.045">
+Этиловый спирт 95–96%
+</option>
+
+<option value="1.31">
+Изопропиловый спирт 99.9%
+</option>
 
 </select>
 
@@ -158,6 +171,10 @@ type="text"
 inputmode="decimal"
 placeholder="Например 30">
 
+<div class="small">
+Спирт добавляется к уже имеющемуся бензину → общий объём увеличивается
+</div>
+
 </div>
 
 <div id="tankBlock" style="display:none;">
@@ -169,6 +186,10 @@ id="tank"
 type="text"
 inputmode="decimal"
 placeholder="Например 65">
+
+<div class="small">
+Сначала заливается спирт, затем бак доливается бензином до полного
+</div>
 
 </div>
 
@@ -189,10 +210,12 @@ function n(v){
 const mix = document.getElementById('mix');
 const fuel = document.getElementById('fuel');
 const tank = document.getElementById('tank');
+const alcoholType = document.getElementById('alcoholType');
 
 mix.addEventListener('change', calc);
 fuel.addEventListener('input', calc);
 tank.addEventListener('input', calc);
+alcoholType.addEventListener('change', calc);
 
 function setMode(selected){
 
@@ -249,8 +272,7 @@ function setMode(selected){
 function calc(){
 
     const e = n(mix.value);
-
-    // Частичная заправка
+    const k = n(alcoholType.value);
 
     if(mode === 'current'){
 
@@ -265,10 +287,10 @@ function calc(){
         }
 
         // Формула:
-        // Vспирта = (E * Vбензина) / (100 - E)
+        // Vспирта = (K * E * Vбензина) / (100 - E)
 
         const alcohol =
-        (e * gasoline) / (100 - e);
+        (k * e * gasoline) / (100 - e);
 
         const total =
         gasoline + alcohol;
@@ -283,7 +305,7 @@ function calc(){
         gasoline.toFixed(2) +
         ' л</span><br><br>' +
 
-        'Итоговый объём смеси:<br><span class="highlight">' +
+        'Общий объём смеси:<br><span class="highlight">' +
         total.toFixed(2) +
         ' л</span><br><br>' +
 
@@ -291,8 +313,6 @@ function calc(){
         e +
         '</span>';
     }
-
-    // До полного бака
 
     else{
 
@@ -307,10 +327,10 @@ function calc(){
         }
 
         // Формула:
-        // Vспирта = E/100 * Vбака
+        // Vспирта = K * E/100 * Vбака
 
         const alcohol =
-        (e / 100) * tankVolume;
+        k * (e / 100) * tankVolume;
 
         const gasoline =
         tankVolume - alcohol;
@@ -335,7 +355,7 @@ function calc(){
     }
 }
 
-if ('serviceWorker' in navigator) {
+if('serviceWorker' in navigator){
     navigator.serviceWorker.register('sw.js');
 }
 
