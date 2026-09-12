@@ -10,6 +10,8 @@ content="width=device-width, initial-scale=1, viewport-fit=cover">
 
 <link rel="icon" type="image/png" href="favicon.png">
 
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+
 <link rel="manifest" href="manifest.json">
 
 <meta name="theme-color" content="#111111">
@@ -284,11 +286,15 @@ function calc(){
     const e = n(mix.value);
     const k = n(alcoholType.value);
 
+    // K = 1 / доля "активного" спирта в литре (вода/эквивалент),
+    // поэтому смесь выше 100/K недостижима ни в одном режиме
+    const maxMix = Math.floor(100 / k);
+
     if(mode === 'current'){
 
         const gasoline = n(fuel.value);
 
-        if(!gasoline){
+        if(!(gasoline > 0)){
 
             document.getElementById('res').innerHTML =
             'Введите количество бензина';
@@ -296,10 +302,21 @@ function calc(){
             return;
         }
 
-        // Vспирта = (K * E * Vбензина) / (100 - E)
+        if(k * e >= 100){
+
+            document.getElementById('res').innerHTML =
+            'С этим спиртом смесь E' + e + ' недостижима.<br>' +
+            'Максимум — E' + maxMix;
+
+            return;
+        }
+
+        // Та же формула 2, где объём смеси = Vспирта + Vбензина:
+        // Vспирта = K * E/100 * (Vспирта + Vбензина)
+        // => Vспирта = (K * E * Vбензина) / (100 - K * E)
 
         const alcohol =
-        (k * e * gasoline) / (100 - e);
+        (k * e * gasoline) / (100 - k * e);
 
         const total =
         gasoline + alcohol;
@@ -327,10 +344,19 @@ function calc(){
 
         const tankVolume = n(tank.value);
 
-        if(!tankVolume){
+        if(!(tankVolume > 0)){
 
             document.getElementById('res').innerHTML =
             'Введите объём бака';
+
+            return;
+        }
+
+        if(k * e > 100){
+
+            document.getElementById('res').innerHTML =
+            'С этим спиртом смесь E' + e + ' недостижима.<br>' +
+            'Максимум — E' + maxMix;
 
             return;
         }
@@ -363,8 +389,9 @@ function calc(){
     }
 }
 
-if('serviceWorker' in navigator){
-// navigator.serviceWorker.register('sw.js');
+// Service worker работает только по http(s) — при открытии файла с диска пропускаем
+if('serviceWorker' in navigator && location.protocol.startsWith('http')){
+    navigator.serviceWorker.register('sw.js');
 }
 
 </script>
