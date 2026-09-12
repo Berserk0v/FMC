@@ -286,9 +286,13 @@ function calc(){
     const e = n(mix.value);
     const k = n(alcoholType.value);
 
-    // K = 1 / доля "активного" спирта в литре (вода/эквивалент),
-    // поэтому смесь выше 100/K недостижима ни в одном режиме
-    const maxMix = Math.floor(100 / k);
+    // При K * E > 100 спирта нужно больше, чем объём смеси, —
+    // подсказываем наибольшую смесь из списка, которая ещё достижима
+    const maxMix = Math.max.apply(null,
+        Array.from(mix.options)
+        .map(function(option){ return n(option.value); })
+        .filter(function(value){ return k * value < 100; })
+    );
 
     if(mode === 'current'){
 
