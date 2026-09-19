@@ -131,6 +131,20 @@ onclick="setMode('full')">
 
 </div>
 
+<label>Тип спирта</label>
+
+<select id="alcoholType">
+
+<option value="1.045">
+Этиловый спирт 95–96%
+</option>
+
+<option value="1.31">
+Изопропиловый спирт 99.9%
+</option>
+
+</select>
+
 <label>Желаемая смесь</label>
 
 <select id="mix">
@@ -158,20 +172,6 @@ onclick="setMode('full')">
 <div class="small">
 E — нужный процент содержания спирта в смеси
 </div>
-
-<label>Тип спирта</label>
-
-<select id="alcoholType">
-
-<option value="1.045">
-Этиловый спирт 95–96%
-</option>
-
-<option value="1.31">
-Изопропиловый спирт 99.9%
-</option>
-
-</select>
 
 <div id="fuelBlock">
 
@@ -227,10 +227,39 @@ const alcoholType = document.getElementById('alcoholType');
 // Максимальная смесь для типа спирта (ключ — значение K в списке)
 const MIX_LIMIT = { '1.31': 30 };
 
+// полный список смесей из разметки; для спирта с ограничением показываем только часть
+const ALL_MIXES = Array.from(mix.options).map(function(option){
+    return { value: option.value, text: option.text };
+});
+
+function updateMixOptions(){
+
+    const limit = MIX_LIMIT[alcoholType.value] || Infinity;
+    const allowed = ALL_MIXES.filter(function(item){ return n(item.value) <= limit; });
+    const previous = mix.value;
+
+    mix.innerHTML = '';
+
+    allowed.forEach(function(item){
+        mix.add(new Option(item.text, item.value));
+    });
+
+    // смесь выше лимита превращается в максимально допустимую
+    const kept = allowed.some(function(item){ return item.value === previous; });
+    mix.value = kept ? previous : allowed[allowed.length - 1].value;
+}
+
 mix.addEventListener('change', calc);
 fuel.addEventListener('input', calc);
 tank.addEventListener('input', calc);
-alcoholType.addEventListener('change', calc);
+
+alcoholType.addEventListener('change', function(){
+    updateMixOptions();
+    calc();
+});
+
+// браузер может восстановить выбранный спирт после перезагрузки
+updateMixOptions();
 
 function setMode(selected){
 
@@ -296,18 +325,6 @@ function calc(){
         .map(function(option){ return n(option.value); })
         .filter(function(value){ return k * value < 100; })
     );
-
-    // Изопропиловый спирт — не выше E30
-    const limit = MIX_LIMIT[alcoholType.value];
-
-    if(limit && e > limit){
-
-        document.getElementById('res').innerHTML =
-        'С этим спиртом смесь не выше E' + limit + '.<br>' +
-        'Выберите E' + limit + ' или ниже';
-
-        return;
-    }
 
     if(mode === 'current'){
 
