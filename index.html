@@ -224,6 +224,9 @@ const fuel = document.getElementById('fuel');
 const tank = document.getElementById('tank');
 const alcoholType = document.getElementById('alcoholType');
 
+// Максимальная смесь для типа спирта (ключ — значение K в списке)
+const MIX_LIMIT = { '1.31': 30 };
+
 mix.addEventListener('change', calc);
 fuel.addEventListener('input', calc);
 tank.addEventListener('input', calc);
@@ -293,6 +296,18 @@ function calc(){
         .map(function(option){ return n(option.value); })
         .filter(function(value){ return k * value < 100; })
     );
+
+    // Изопропиловый спирт — не выше E30
+    const limit = MIX_LIMIT[alcoholType.value];
+
+    if(limit && e > limit){
+
+        document.getElementById('res').innerHTML =
+        'С этим спиртом смесь не выше E' + limit + '.<br>' +
+        'Выберите E' + limit + ' или ниже';
+
+        return;
+    }
 
     if(mode === 'current'){
 
